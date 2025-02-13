@@ -34,4 +34,4 @@ exports.seed = async function(knex) {
       returned_at: null
     }
   ]);
-};
+}; 

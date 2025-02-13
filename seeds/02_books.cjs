@@ -46,4 +46,4 @@ exports.seed = async function(knex) {
       total_ratings: 0
     }
   ]);
-};
+}; 

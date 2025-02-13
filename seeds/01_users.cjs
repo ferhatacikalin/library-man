@@ -15,4 +15,4 @@ exports.seed = async function(knex) {
     { id: 3, name: 'Sefa Eren Şahin' },
     { id: 4, name: 'Kadir Mutlu' }
   ]);
-};
+}; 
