@@ -41,7 +41,12 @@ class Book {
    */
   static async createBook(bookData) {
     const [id] = await db(this.tableName)
-      .insert(bookData)
+      .insert({
+        ...bookData,
+        is_available: true,
+        average_score: 0,
+        total_ratings: 0,
+      })
       .returning('id');
     
     return this.getBookById(id);
@@ -76,28 +81,22 @@ class Book {
   }
 
   /**
-   * Update book rating
+   * Update book rating using a single query with raw SQL
    * @param {number} id - Book ID
    * @param {number} newScore - New rating score
    * @returns {Promise<void>}
    */
   static async updateRating(id, newScore) {
-    const book = await db(this.tableName)
-      .where({ id })
-      .first('total_ratings', 'average_score');
-
-    const newTotalRatings = book.total_ratings + 1;
-    const newAverageScore = (
-      (book.average_score * book.total_ratings + newScore) /
-      newTotalRatings
-    ).toFixed(2);
-
-    await db(this.tableName)
-      .where({ id })
-      .update({
-        total_ratings: newTotalRatings,
-        average_score: newAverageScore,
-      });
+    await db.raw(`
+      UPDATE ${this.tableName}
+      SET 
+        total_ratings = total_ratings + 1,
+        average_score = ROUND(
+          (average_score * total_ratings + ?) / (total_ratings + 1),
+          2
+        )
+      WHERE id = ?
+    `, [newScore, id]);
   }
 }
 

@@ -2,6 +2,13 @@ import User from '../models/User.js';
 import Book from '../models/Book.js';
 import Borrowing from '../models/Borrowing.js';
 
+/**
+ * Get all users with their basic information
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @param {import('express').NextFunction} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.getAllUsers();
@@ -11,6 +18,13 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
+/**
+ * Get user details by ID including borrowing history
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @param {import('express').NextFunction} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -30,6 +44,13 @@ export const getUserById = async (req, res, next) => {
   }
 };
 
+/**
+ * Create a new user
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @param {import('express').NextFunction} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export const createUser = async (req, res, next) => {
   try {
     const user = await User.createUser(req.body);
@@ -39,6 +60,13 @@ export const createUser = async (req, res, next) => {
   }
 };
 
+/**
+ * Borrow a book for a user
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @param {import('express').NextFunction} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export const borrowBook = async (req, res, next) => {
   try {
     const { userId, bookId } = req.params;
@@ -71,10 +99,8 @@ export const borrowBook = async (req, res, next) => {
       return;
     }
 
-    // Create borrowing record
+    // Create borrowing record and update book availability
     await Borrowing.createBorrowing({ user_id: userId, book_id: bookId });
-
-    // Update book availability
     await Book.updateAvailability(bookId, false);
 
     res.status(204).send();
@@ -83,6 +109,13 @@ export const borrowBook = async (req, res, next) => {
   }
 };
 
+/**
+ * Return a book and add rating
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @param {import('express').NextFunction} next - Express next middleware function
+ * @returns {Promise<void>}
+ */
 export const returnBook = async (req, res, next) => {
   try {
     const { userId, bookId } = req.params;
@@ -108,7 +141,7 @@ export const returnBook = async (req, res, next) => {
       return;
     }
 
-    // Return book and update rating
+    // Return book, update availability and rating
     await Borrowing.returnBook(userId, bookId, score);
     await Book.updateAvailability(bookId, true);
     await Book.updateRating(bookId, score);

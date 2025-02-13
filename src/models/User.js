@@ -20,19 +20,17 @@ class User {
    * @returns {Promise<Object>} User details with borrowing history
    */
   static async getUserById(id) {
+    // First check if user exists
     const user = await db(this.tableName)
       .where({ id })
       .first('id', 'name');
 
     if (!user) return null;
 
-    // Get past borrowings (returned books with scores)
-    const pastBorrowings = await db('borrowings')
+    // Get all borrowings in a single query
+    const borrowings = await db('borrowings')
       .join('books', 'borrowings.book_id', 'books.id')
-      .where({
-        'borrowings.user_id': id,
-      })
-      .whereNotNull('borrowings.returned_at')
+      .where('borrowings.user_id', id)
       .select(
         'books.name',
         'borrowings.score as userScore',
@@ -40,36 +38,40 @@ class User {
         'borrowings.returned_at'
       );
 
-    // Format dates for past borrowings
-    const formattedPastBorrowings = pastBorrowings.map(borrowing => ({
-      name: borrowing.name,
-      userScore: borrowing.userScore,
-      borrowedAt: moment(borrowing.borrowed_at).format('YYYY-MM-DD HH:mm:ss'),
-      returnedAt: moment(borrowing.returned_at).format('YYYY-MM-DD HH:mm:ss'),
-      duration: moment(borrowing.returned_at).diff(moment(borrowing.borrowed_at), 'days')
-    }));
+    // Separate and format past and present borrowings
+    const { past, present } = borrowings.reduce(
+      (acc, borrowing) => {
+        const formatted = {
+          name: borrowing.name,
+          borrowedAt: moment(borrowing.borrowed_at).format('YYYY-MM-DD HH:mm:ss'),
+        };
 
-    // Get present borrowings (not returned yet)
-    const presentBorrowings = await db('borrowings')
-      .join('books', 'borrowings.book_id', 'books.id')
-      .where({
-        'borrowings.user_id': id,
-      })
-      .whereNull('borrowings.returned_at')
-      .select('books.name', 'borrowings.borrowed_at');
+        if (borrowing.returned_at) {
+          // Past borrowing
+          acc.past.push({
+            ...formatted,
+            userScore: borrowing.userScore,
+            returnedAt: moment(borrowing.returned_at).format('YYYY-MM-DD HH:mm:ss'),
+            duration: moment(borrowing.returned_at).diff(moment(borrowing.borrowed_at), 'days'),
+          });
+        } else {
+          // Present borrowing
+          acc.present.push({
+            ...formatted,
+            duration: moment().diff(moment(borrowing.borrowed_at), 'days'),
+          });
+        }
 
-    // Format dates for present borrowings
-    const formattedPresentBorrowings = presentBorrowings.map(borrowing => ({
-      name: borrowing.name,
-      borrowedAt: moment(borrowing.borrowed_at).format('YYYY-MM-DD HH:mm:ss'),
-      duration: moment().diff(moment(borrowing.borrowed_at), 'days')
-    }));
+        return acc;
+      },
+      { past: [], present: [] }
+    );
 
     return {
       ...user,
       books: {
-        past: formattedPastBorrowings,
-        present: formattedPresentBorrowings,
+        past,
+        present,
       },
     };
   }

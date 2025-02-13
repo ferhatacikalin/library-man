@@ -44,7 +44,7 @@ A Node.js based library management system with REST API endpoints for managing u
 
 ## Tasks Breakdown
 
-### 1. Project Setup (Priority: High)
+### 1. Project Setup (Priority: High) ✅
 - [x] Initialize Git repository
 - [x] Create project structure
 - [x] Initialize npm project
@@ -52,7 +52,7 @@ A Node.js based library management system with REST API endpoints for managing u
 - [x] Configure ESLint with provided rules
 - [x] Create basic README.md
 
-### 2. Database Setup (Priority: High)
+### 2. Database Setup (Priority: High) ✅
 - [x] Configure Knex.js
 - [x] Create migrations for:
   - [x] Users table
@@ -61,70 +61,69 @@ A Node.js based library management system with REST API endpoints for managing u
 - [x] Create seed data for testing
 - [x] Set up database connection
 
-### 3. API Endpoints Implementation (Priority: High)
-
+### 3. API Endpoints Implementation (Priority: High) ✅
 #### User Management
-- [ ] GET /users
+- [x] GET /users
   - List all users
   - Return user IDs and names
-- [ ] GET /users/:id
+- [x] GET /users/:id
   - Get user details
   - Include past and present borrowed books
-- [ ] POST /users
+- [x] POST /users
   - Create new user
   - Validate request body
 
 #### Book Management
-- [ ] GET /books
+- [x] GET /books
   - List all books
   - Return book IDs and names
-- [ ] GET /books/:id
+- [x] GET /books/:id
   - Get book details
   - Calculate and return average rating
-- [ ] POST /books
+- [x] POST /books
   - Create new book
   - Validate request body
 
 #### Borrowing Operations
-- [ ] POST /users/:userId/borrow/:bookId
+- [x] POST /users/:userId/borrow/:bookId
   - Implement borrow logic
   - Add validation for existing user/book
   - Check if book is available
-- [ ] POST /users/:userId/return/:bookId
+- [x] POST /users/:userId/return/:bookId
   - Implement return logic
   - Handle book rating
   - Update book average score
 
-### 4. Error Handling & Validation (Priority: High)
+### 4. Error Handling & Validation (Priority: High) ✅
 - [x] Implement global error handler
-- [ ] Create Joi validation schemas for:
-  - [ ] User creation
-  - [ ] Book creation
-  - [ ] Book rating
-- [ ] Handle common error scenarios:
-  - [ ] Non-existing user/book
-  - [ ] Already borrowed book
-  - [ ] Invalid input data
+- [x] Create Joi validation schemas for:
+  - [x] User creation
+  - [x] Book creation
+  - [x] Book rating
+- [x] Handle common error scenarios:
+  - [x] Non-existing user/book
+  - [x] Already borrowed book
+  - [x] Invalid input data
 
-### 5. Logging & Monitoring (Priority: Medium)
-- [ ] Set up Winston logger
-- [ ] Implement request logging
-- [ ] Add error logging
-- [ ] Configure different log levels
+### 5. Logging & Monitoring (Priority: Medium) ✅
+- [x] Set up Winston logger
+- [x] Implement request logging
+- [x] Add error logging
+- [x] Configure different log levels
 
-### 6. Testing & Documentation (Priority: Medium)
+### 6. Testing & Documentation (Priority: Medium) ✅
 - [x] Test all endpoints with Postman collection
 - [x] Document API endpoints in README
 - [x] Add setup instructions
 - [x] Document error codes and responses
 
-### 7. Code Quality & Optimization (Priority: Medium)
-- [ ] Implement proper code comments
-- [ ] Add JSDoc documentation
-- [ ] Optimize database queries
-- [ ] Add input sanitization
+### 7. Code Quality & Optimization (Priority: Medium) ✅
+- [x] Implement proper code comments
+- [x] Add JSDoc documentation
+- [x] Optimize database queries
+- [x] Add input sanitization
 
-### 8. Final Steps (Priority: Low)
+### 8. Final Steps (Priority: Low) 🔄
 - [ ] Review and refactor code
 - [ ] Ensure all endpoints match Postman collection
 - [ ] Verify error handling
