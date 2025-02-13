@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Book from '../models/Book.js';
 import Borrowing from '../models/Borrowing.js';
+import { db } from '../config/database.js';
 
 /**
  * Get all users with their basic information
@@ -31,11 +32,10 @@ export const getUserById = async (req, res, next) => {
     const user = await User.getUserById(id);
 
     if (!user) {
-      next({
+      return next({
         status: 404,
         message: 'User not found',
       });
-      return;
     }
 
     res.json(user);
@@ -68,43 +68,57 @@ export const createUser = async (req, res, next) => {
  * @returns {Promise<void>}
  */
 export const borrowBook = async (req, res, next) => {
+  const trx = await db.transaction();
+  
   try {
     const { userId, bookId } = req.params;
 
     // Check if user exists
     const userExists = await User.exists(userId);
     if (!userExists) {
-      next({
+      await trx.rollback();
+      return next({
         status: 404,
         message: 'User not found',
       });
-      return;
     }
 
     // Check if book exists and is available
     const { exists, isAvailable } = await Book.checkAvailability(bookId);
     if (!exists) {
-      next({
+      await trx.rollback();
+      return next({
         status: 404,
         message: 'Book not found',
       });
-      return;
     }
 
     if (!isAvailable) {
-      next({
+      await trx.rollback();
+      return next({
         status: 400,
         message: 'Book is not available',
       });
-      return;
+    }
+
+    // Check if user has any unreturned books
+    const hasUnreturned = await Borrowing.hasUnreturnedBooks(userId);
+    if (hasUnreturned) {
+      await trx.rollback();
+      return next({
+        status: 400,
+        message: 'User has unreturned books',
+      });
     }
 
     // Create borrowing record and update book availability
-    await Borrowing.createBorrowing({ user_id: userId, book_id: bookId });
-    await Book.updateAvailability(bookId, false);
+    await Borrowing.createBorrowing({ user_id: userId, book_id: bookId }, trx);
+    await Book.updateAvailability(bookId, false, trx);
 
+    await trx.commit();
     res.status(204).send();
   } catch (error) {
+    await trx.rollback();
     next(error);
   }
 };
@@ -117,6 +131,8 @@ export const borrowBook = async (req, res, next) => {
  * @returns {Promise<void>}
  */
 export const returnBook = async (req, res, next) => {
+  const trx = await db.transaction();
+  
   try {
     const { userId, bookId } = req.params;
     const { score } = req.body;
@@ -124,30 +140,42 @@ export const returnBook = async (req, res, next) => {
     // Check if user exists
     const userExists = await User.exists(userId);
     if (!userExists) {
-      next({
+      await trx.rollback();
+      return next({
         status: 404,
         message: 'User not found',
       });
-      return;
     }
 
     // Check if book exists
     const { exists } = await Book.checkAvailability(bookId);
     if (!exists) {
-      next({
+      await trx.rollback();
+      return next({
         status: 404,
         message: 'Book not found',
       });
-      return;
+    }
+
+    // Check if user has borrowed this book
+    const activeBorrowing = await Borrowing.getActiveBorrowingByBookId(bookId);
+    if (!activeBorrowing || activeBorrowing.user_id !== parseInt(userId, 10)) {
+      await trx.rollback();
+      return next({
+        status: 400,
+        message: 'User has not borrowed this book',
+      });
     }
 
     // Return book, update availability and rating
-    await Borrowing.returnBook(userId, bookId, score);
-    await Book.updateAvailability(bookId, true);
-    await Book.updateRating(bookId, score);
+    await Borrowing.returnBook(userId, bookId, score, trx);
+    await Book.updateAvailability(bookId, true, trx);
+    await Book.updateRating(bookId, score, trx);
 
+    await trx.commit();
     res.status(204).send();
   } catch (error) {
+    await trx.rollback();
     next(error);
   }
 }; 

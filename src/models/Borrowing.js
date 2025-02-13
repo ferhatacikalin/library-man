@@ -8,27 +8,30 @@ class Borrowing {
    * @param {Object} borrowData - Borrowing data
    * @param {number} borrowData.user_id - User ID
    * @param {number} borrowData.book_id - Book ID
+   * @param {Object} [trx] - Knex transaction object
    * @returns {Promise<Object>} Created borrowing record
    */
-  static async createBorrowing(borrowData) {
+  static async createBorrowing(borrowData, trx) {
     const now = new Date();
-    const [id] = await db(this.tableName)
+    const query = (trx || db)(this.tableName)
       .insert({
         ...borrowData,
         borrowed_at: now,
       })
       .returning('id');
 
-    return this.getBorrowingById(id);
+    const [id] = await query;
+    return this.getBorrowingById(id, trx);
   }
 
   /**
    * Get borrowing record by ID
    * @param {number} id - Borrowing ID
+   * @param {Object} [trx] - Knex transaction object
    * @returns {Promise<Object>} Borrowing record
    */
-  static async getBorrowingById(id) {
-    return db(this.tableName)
+  static async getBorrowingById(id, trx) {
+    return (trx || db)(this.tableName)
       .where({ id })
       .first();
   }
@@ -36,10 +39,11 @@ class Borrowing {
   /**
    * Get active borrowing record for a book
    * @param {number} bookId - Book ID
+   * @param {Object} [trx] - Knex transaction object
    * @returns {Promise<Object>} Active borrowing record
    */
-  static async getActiveBorrowingByBookId(bookId) {
-    return db(this.tableName)
+  static async getActiveBorrowingByBookId(bookId, trx) {
+    return (trx || db)(this.tableName)
       .where({
         book_id: bookId,
         returned_at: null,
@@ -52,12 +56,13 @@ class Borrowing {
    * @param {number} userId - User ID
    * @param {number} bookId - Book ID
    * @param {number} score - Rating score
+   * @param {Object} [trx] - Knex transaction object
    * @returns {Promise<Object>} Updated borrowing record
    */
-  static async returnBook(userId, bookId, score) {
+  static async returnBook(userId, bookId, score, trx) {
     const now = new Date();
     
-    await db(this.tableName)
+    await (trx || db)(this.tableName)
       .where({
         user_id: userId,
         book_id: bookId,
@@ -68,16 +73,17 @@ class Borrowing {
         score,
       });
 
-    return this.getActiveBorrowingByBookId(bookId);
+    return this.getActiveBorrowingByBookId(bookId, trx);
   }
 
   /**
    * Check if user has any unreturned books
    * @param {number} userId - User ID
+   * @param {Object} [trx] - Knex transaction object
    * @returns {Promise<boolean>} True if user has unreturned books
    */
-  static async hasUnreturnedBooks(userId) {
-    const result = await db(this.tableName)
+  static async hasUnreturnedBooks(userId, trx) {
+    const result = await (trx || db)(this.tableName)
       .where({
         user_id: userId,
         returned_at: null,
