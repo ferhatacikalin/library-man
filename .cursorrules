@@ -1,0 +1,31 @@
+{
+  "codeStyle": {
+    "indentation": "2 spaces",
+    "quotes": "single",
+    "semiColons": true,
+    "braces": "K&R style",
+    "arrowFunctions": "prefer arrow functions when appropriate",
+    "naming": {
+      "variables": "camelCase",
+      "functions": "camelCase",
+      "files": "kebab-case"
+    },
+    "comments": "Use JSDoc for functions and inline comments where necessary."
+  },
+  "linting": {
+    "eslint": {
+      "enabled": true,
+      "rules": {
+        "no-unused-vars": "warn",
+        "no-console": "off",
+        "indent": ["error", 2],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"]
+      }
+    }
+  },
+  "formatting": {
+    "lineWidth": 80,
+    "trailingComma": "es5"
+  }
+}
