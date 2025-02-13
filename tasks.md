@@ -6,7 +6,7 @@ A Node.js based library management system with REST API endpoints for managing u
 ## Tech Stack
 - Node.js & Express.js
 - ES5+ JavaScript
-- PostgreSQL/MySQL (Relational Database)
+- MySQL (Relational Database)
 - Knex.js (Query Builder)
 - Joi (Request Validation)
 - Winston (Logging)
@@ -45,21 +45,21 @@ A Node.js based library management system with REST API endpoints for managing u
 ## Tasks Breakdown
 
 ### 1. Project Setup (Priority: High)
-- [ ] Initialize Git repository
-- [ ] Create project structure
-- [ ] Initialize npm project
-- [ ] Install required dependencies
-- [ ] Configure ESLint with provided rules
-- [ ] Create basic README.md
+- [x] Initialize Git repository
+- [x] Create project structure
+- [x] Initialize npm project
+- [x] Install required dependencies
+- [x] Configure ESLint with provided rules
+- [x] Create basic README.md
 
 ### 2. Database Setup (Priority: High)
-- [ ] Configure Knex.js
-- [ ] Create migrations for:
-  - [ ] Users table
-  - [ ] Books table
-  - [ ] Borrowings table
-- [ ] Create seed data for testing
-- [ ] Set up database connection
+- [x] Configure Knex.js
+- [x] Create migrations for:
+  - [x] Users table
+  - [x] Books table
+  - [x] Borrowings table
+- [x] Create seed data for testing
+- [x] Set up database connection
 
 ### 3. API Endpoints Implementation (Priority: High)
 
@@ -96,7 +96,7 @@ A Node.js based library management system with REST API endpoints for managing u
   - Update book average score
 
 ### 4. Error Handling & Validation (Priority: High)
-- [ ] Implement global error handler
+- [x] Implement global error handler
 - [ ] Create Joi validation schemas for:
   - [ ] User creation
   - [ ] Book creation
@@ -113,10 +113,10 @@ A Node.js based library management system with REST API endpoints for managing u
 - [ ] Configure different log levels
 
 ### 6. Testing & Documentation (Priority: Medium)
-- [ ] Test all endpoints with Postman collection
-- [ ] Document API endpoints in README
-- [ ] Add setup instructions
-- [ ] Document error codes and responses
+- [x] Test all endpoints with Postman collection
+- [x] Document API endpoints in README
+- [x] Add setup instructions
+- [x] Document error codes and responses
 
 ### 7. Code Quality & Optimization (Priority: Medium)
 - [ ] Implement proper code comments

@@ -2,6 +2,7 @@
   "name": "library-man",
   "version": "1.0.0",
   "description": "A library management system with REST API endpoints for managing users and books",
+  "type": "module",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -12,7 +13,13 @@
     "migrate:rollback": "knex migrate:rollback",
     "seed": "knex seed:run"
   },
-  "keywords": ["library", "management", "api", "express", "node"],
+  "keywords": [
+    "library",
+    "management",
+    "api",
+    "express",
+    "node"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,7 +30,7 @@
     "knex": "^3.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
-    "pg": "^8.13.3",
+    "mysql2": "^3.12.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
