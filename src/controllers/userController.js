@@ -111,12 +111,21 @@ export const borrowBook = async (req, res, next) => {
       });
     }
 
+    // Get book and user details for response message
+    const [book, user] = await Promise.all([
+      Book.getBookById(bookId),
+      User.getUserById(userId)
+    ]);
+
     // Create borrowing record and update book availability
     await Borrowing.createBorrowing({ user_id: userId, book_id: bookId }, trx);
     await Book.updateAvailability(bookId, false, trx);
 
     await trx.commit();
-    res.status(204).send();
+    res.status(200).json({
+      message: `Book "${book.name}" has been successfully borrowed by ${user.name}`,
+      success: true
+    });
   } catch (error) {
     await trx.rollback();
     next(error);
@@ -167,13 +176,22 @@ export const returnBook = async (req, res, next) => {
       });
     }
 
+    // Get book and user details for response message
+    const [book, user] = await Promise.all([
+      Book.getBookById(bookId),
+      User.getUserById(userId)
+    ]);
+
     // Return book, update availability and rating
     await Borrowing.returnBook(userId, bookId, score, trx);
     await Book.updateAvailability(bookId, true, trx);
     await Book.updateRating(bookId, score, trx);
 
     await trx.commit();
-    res.status(204).send();
+    res.status(200).json({
+      message: `Book "${book.name}" has been successfully returned by ${user.name} with a rating of ${score}`,
+      success: true
+    });
   } catch (error) {
     await trx.rollback();
     next(error);
